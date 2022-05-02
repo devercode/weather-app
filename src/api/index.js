@@ -7,11 +7,31 @@ const client = axios.create({
   },
 });
 
-export const searchByGEO = (lat, lon) => {
-  return client.get("locations/v1/cities/geoposition/search", {
+export const getLocationByGEO = (lat, lon) => {
+  return client.get("/locations/v1/cities/geoposition/search", {
     params: {
-      details: true,
       q: `${lat}, ${lon}`,
     },
   });
+};
+
+export const getForecastByLocation = async (location) => {
+  const { data } = await client.get(
+    `/forecasts/v1/daily/5day/${location.Key}`,
+    {
+      params: {
+        details: true,
+        metric: true,
+      },
+    }
+  );
+  return {
+    ...data,
+    location,
+  };
+};
+
+export const get5dayForeCastByGEO = async (lat, lon) => {
+  const { data } = await getLocationByGEO(lat, lon);
+  return await getForecastByLocation(data);
 };

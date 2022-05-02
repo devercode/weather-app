@@ -1,7 +1,7 @@
 import { Autocomplete, Box, TextField } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useCurrentPosition } from "react-use-geolocation";
-import { searchByGEO } from "../api";
+import { get5dayForeCastByGEO } from "../api";
 
 const SearchBox = () => {
   const [opts, setOpts] = useState([]);
@@ -21,7 +21,11 @@ const DefaultLocation = React.memo(() => {
 
   useEffect(() => {
     if (geo) {
-      searchByGEO(geo.coords.latitude, geo.coords.longitude);
+      get5dayForeCastByGEO(geo.coords.latitude, geo.coords.longitude).then(
+        (data) => {
+          console.log(data);
+        }
+      );
     }
   }, [geo]);
   if (!geo && !error) {
@@ -41,6 +45,7 @@ const DefaultLocation = React.memo(() => {
     </div>
   );
 });
+
 const Home = () => {
   return (
     <>

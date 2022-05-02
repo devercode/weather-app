@@ -33,5 +33,10 @@ export const getForecastByLocation = async (location) => {
 
 export const get5dayForeCastByGEO = async (lat, lon) => {
   const { data } = await getLocationByGEO(lat, lon);
-  return await getForecastByLocation(data);
+
+  const dt = await getForecastByLocation(data);
+
+  console.log(JSON.stringify(dt));
+
+  return dt;
 };

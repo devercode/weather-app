@@ -3,7 +3,7 @@ import axios from "axios";
 const client = axios.create({
   baseURL: "https://dataservice.accuweather.com",
   params: {
-    apiKey: "mrIhUufHhwBrTsQLotj4tOW5jO7ku6LQ",
+    apikey: "mrIhUufHhwBrTsQLotj4tOW5jO7ku6LQ",
   },
 });
 

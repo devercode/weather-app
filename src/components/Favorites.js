@@ -29,9 +29,9 @@ const Location = (props) => {
 };
 const Favorites = () => {
   const favLocations = useSelector((state) => state.favorites.locations);
-  console.log(favLocations);
+
   return (
-    <Stack spacing={10}>
+    <Stack spacing={10} direction={"row"}>
       {favLocations.map((fav) => (
         <Location {...fav} />
       ))}

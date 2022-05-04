@@ -1,14 +1,18 @@
-import { Container } from "@mui/material";
+import { Container, styled, Box } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { actions } from "./state/slices/theme";
+import { useSelector } from "react-redux";
 import Header from "./components/Header";
 import Favorites from "./components/Favorites";
 import Home from "./components/Home";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import { blue, grey, brown, orange } from "@mui/material/colors";
+
+const Main = styled(Box)`
+  height: calc(100vh - 64px);
+`;
 
 function App() {
-  const dispatch = useDispatch();
   const themeMode = useSelector((state) => state.theme.mode);
   const theme = useMemo(
     () =>
@@ -22,16 +26,26 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Header />
-      <Container
-        sx={{
-          marginTop: "64px",
-          padding: "20px",
-        }}
-      >
-        {/* <Home /> */}
-        <Favorites />
-      </Container>
+      <Router>
+        <Header />
+        <Main
+          sx={{
+            bgcolor: "background.default",
+          }}
+        >
+          <Container
+            sx={{
+              marginTop: "64px",
+              padding: "20px",
+            }}
+          >
+            <Routes>
+              <Route path="/" exact element={<Home />} />
+              <Route path="/favorites" element={<Favorites />} />
+            </Routes>
+          </Container>
+        </Main>
+      </Router>
     </ThemeProvider>
   );
 }

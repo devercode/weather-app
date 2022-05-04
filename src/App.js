@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "./state/slices/theme";
 import Header from "./components/Header";
+import Favorites from "./components/Favorites";
 import Home from "./components/Home";
 
 function App() {
@@ -28,7 +29,8 @@ function App() {
           padding: "20px",
         }}
       >
-        <Home />
+        {/* <Home /> */}
+        <Favorites />
       </Container>
     </ThemeProvider>
   );

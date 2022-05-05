@@ -6,6 +6,9 @@ import { Provider } from "react-redux";
 import { store } from "./state/store";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import "./index.css";
 //
 const persistor = persistStore(store);
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -14,6 +17,7 @@ root.render(
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <App />
+        <ToastContainer />
       </PersistGate>
     </Provider>
   </React.StrictMode>

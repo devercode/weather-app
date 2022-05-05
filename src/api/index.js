@@ -1,5 +1,7 @@
 import axios from "axios";
 import _ from "lodash";
+import { toast } from "react-toastify";
+
 const keys = [
   "sqAsoOUJlZgRBCkyfEBrl23jnntaOfuw",
   "dtsHeugV48INzXPkjfG1ENV74Bb4NGMx",
@@ -26,8 +28,25 @@ client.interceptors.request.use((request) => {
     ...request.params,
     apikey: _.shuffle(keys)[0],
   };
+  window.NProgress.start();
   return request;
 });
+
+client.interceptors.response.use(
+  function (response) {
+    window.NProgress.done();
+    return response;
+  },
+  function (err) {
+    window.NProgress.done();
+    if (err.code === "ERR_NETWORK") {
+      toast.error("Reached API Limit");
+    } else {
+      toast.error(err.response.data);
+    }
+    return Promise.reject(err);
+  }
+);
 
 export const getLocationByGEO = (lat, lon) => {
   return client.get("/locations/v1/cities/geoposition/search", {
@@ -79,10 +98,7 @@ export const getForecast1DayByLocation = async (location) => {
 
 export const get5dayForeCastByGEO = async (lat, lon) => {
   const { data } = await getLocationByGEO(lat, lon);
-
-  const dt = await getForecastByLocation(data.Key);
-
-  console.log(JSON.stringify(dt));
+  const dt = await getForecastByLocation(data);
 
   return dt;
 };

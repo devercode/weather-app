@@ -1,14 +1,14 @@
 import {
   Autocomplete,
   Box,
-  Grid,
   TextField,
-  Button,
   Card,
   Stack,
   Typography,
+  Alert,
 } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useCurrentPosition } from "react-use-geolocation";
 import {
   get5dayForeCastByGEO,
@@ -17,13 +17,13 @@ import {
 } from "../api";
 import { useDebouncedCallback } from "use-debounce";
 import _ from "lodash";
-import response from "./response.json";
 import ReactMoment from "react-moment";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "../state/slices/favorites";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IconButton from "@mui/material/IconButton";
+import ALert from "@mui/material/Alert";
 const SearchBox = ({ onSelect }) => {
   const [opts, setOpts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -65,35 +65,49 @@ const SearchBox = ({ onSelect }) => {
   );
 };
 
-const DefaultLocation = React.memo(() => {
+const DefaultLocation = ({ onReady }) => {
   const [geo, error] = useCurrentPosition();
 
   useEffect(() => {
     if (geo) {
       get5dayForeCastByGEO(geo.coords.latitude, geo.coords.longitude).then(
         (data) => {
-          console.log(data);
+          onReady(data);
         }
       );
     }
   }, [geo]);
   if (!geo && !error) {
-    return <div>Loading</div>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+        }}
+        mt={4}
+        justifyContent={"center"}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
   if (error) {
     return (
-      <div>
-        Couldn't detect current Location. Please Allow Location permission
-      </div>
+      <Box
+        sx={{
+          display: "flex",
+        }}
+        mt={4}
+        justifyContent={"center"}
+      >
+        <Alert severity="error">
+          Couldn't detect current location, please turn on location permission!.
+        </Alert>
+      </Box>
     );
   }
 
-  return (
-    <div>
-      {geo.coords.latitude} {geo.coords.longitude}
-    </div>
-  );
-});
+  return <></>;
+};
 
 const Forecast = (data) => {
   return (
@@ -114,9 +128,9 @@ const Forecast = (data) => {
     </Card>
   );
 };
+
 const Home = () => {
-  const [data, setData] = useState(response);
-  const { DailyForecasts, Headline, location } = data;
+  const [data, setData] = useState(null);
   const dispatch = useDispatch();
   const onSelect = (v) => {
     getForecastByLocation(v).then((res) => {
@@ -124,59 +138,79 @@ const Home = () => {
     });
   };
   const favorites = useSelector((state) => state.favorites.locations);
-  const isFavorite = useMemo(() => {
-    return _.find(favorites, {
-      Key: location.Key,
-    });
-  }, [location, favorites]);
 
-  const Saved = () => {
-    dispatch(actions.add(location));
+  const isFavorite = useMemo(() => {
+    if (!data || !data.location) return false;
+    return _.find(favorites, {
+      Key: data.location.Key,
+    });
+  }, [data, favorites]);
+
+  const ToggleFavorite = useCallback(() => {
+    if (isFavorite) {
+      dispatch(actions.remove(data.location));
+    } else {
+      dispatch(actions.add(data.location));
+    }
+  }, [isFavorite]);
+
+  const onLocationReady = (data) => {
+    setData(data);
   };
+  useEffect(() => {
+    window.NProgress.start();
+  }, []);
+
   return (
     <>
       <SearchBox onSelect={onSelect} />
-      {/* <DefaultLocation /> */}
-      <Box
-        sx={{
-          border: "1px solid",
-          borderColor: "rgba(0, 0, 0, 0.23)",
-          marginTop: "25px",
-          borderRadius: "5px",
-          padding: "20px",
-        }}
-      >
-        <Stack direction={"row"} justifyContent={"space-between"}>
-          <div>
-            <Typography variant="h2">
-              {location.EnglishName}, {location.Country.EnglishName}
-            </Typography>
-            <Typography variant="h4">
-              {DailyForecasts[0].Temperature.Maximum.Value}° C
-            </Typography>
-          </div>
-          <div>
-            <IconButton onClick={Saved}>
-              {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-            </IconButton>
-          </div>
-        </Stack>
-
-        <Typography variant="h3" textAlign={"center"} mt={10} mb={10}>
-          {DailyForecasts[0].Day.ShortPhrase}
-        </Typography>
-
-        <Stack
-          direction={"row"}
-          spacing={4}
-          justifyContent={"space-between"}
-          flexWrap={"wrap"}
+      <DefaultLocation onReady={onLocationReady} />
+      {data && (
+        <Box
+          sx={{
+            border: "1px solid",
+            borderColor: "rgba(0, 0, 0, 0.23)",
+            marginTop: "25px",
+            borderRadius: "5px",
+            padding: "20px",
+          }}
         >
-          {DailyForecasts.map((forecast) => (
-            <Forecast {...forecast} />
-          ))}
-        </Stack>
-      </Box>
+          <Stack direction={"row"} justifyContent={"space-between"}>
+            <div>
+              <Typography variant="h2">
+                {data.location.EnglishName}, {data.location.Country.EnglishName}
+              </Typography>
+              <Typography variant="h4">
+                {data.DailyForecasts[0].Temperature.Maximum.Value}° C
+              </Typography>
+            </div>
+            <div>
+              <IconButton onClick={ToggleFavorite}>
+                {isFavorite ? (
+                  <FavoriteIcon color={"secondary"} />
+                ) : (
+                  <FavoriteBorderIcon />
+                )}
+              </IconButton>
+            </div>
+          </Stack>
+
+          <Typography variant="h3" textAlign={"center"} mt={10} mb={10}>
+            {data.DailyForecasts[0].Day.ShortPhrase}
+          </Typography>
+
+          <Stack
+            direction={"row"}
+            spacing={4}
+            justifyContent={"space-between"}
+            flexWrap={"wrap"}
+          >
+            {data.DailyForecasts.map((forecast, i) => (
+              <Forecast {...forecast} key={i} />
+            ))}
+          </Stack>
+        </Box>
+      )}
     </>
   );
 };

@@ -14,9 +14,9 @@ export const FavoritesSlice = createSlice({
     },
     remove: (state, action) => {
       const key = action.payload.Key;
-      state.locations = _.remove(state.locations, {
-        Key: key,
-      });
+      state.locations = state.locations.filter(
+        (location) => location.Key !== key
+      );
     },
   },
 });

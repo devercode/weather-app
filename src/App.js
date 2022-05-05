@@ -6,7 +6,6 @@ import Header from "./components/Header";
 import Favorites from "./components/Favorites";
 import Home from "./components/Home";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-// import { blue, grey, brown, orange } from "@mui/material/colors";
 
 const Main = styled(Box)`
   height: calc(100vh - 64px);

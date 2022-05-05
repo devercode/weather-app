@@ -19,7 +19,11 @@ const Header = () => {
     dispatch(actions.toggle());
   };
   return (
-    <AppBar>
+    <AppBar
+      sx={{
+        zIndex: 1,
+      }}
+    >
       <Toolbar>
         <Typography variant="h5">Herolo Weather App</Typography>
         <Box sx={{ flexGrow: 1 }} />

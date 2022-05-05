@@ -4,7 +4,6 @@ import { getForecast1DayByLocation } from "../api";
 import { Card, Typography, Stack, Grid } from "@mui/material";
 const Location = (props) => {
   const [data, setData] = useState(null);
-  console.log(data);
   useEffect(() => {
     getForecast1DayByLocation(props).then((data) => setData(data));
   }, []);

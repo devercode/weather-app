@@ -41,8 +41,8 @@ const Favorites = () => {
 
   return (
     <Grid spacing={10} direction={"row"} flexWrap={"wrap"} container>
-      {favLocations.map((fav) => (
-        <Grid item>
+      {favLocations.map((fav, i) => (
+        <Grid item key={i}>
           <Location {...fav} />
         </Grid>
       ))}

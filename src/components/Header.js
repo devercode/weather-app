@@ -47,8 +47,6 @@ const Header = () => {
                 <Brightness4Icon />
               )}
             </IconButton>
-            {/* <LinkRouter to="/">Home</LinkRouter>
-            <LinkRouter to="/favorites">Favorites</LinkRouter> */}
           </Stack>
         </Box>
       </Toolbar>

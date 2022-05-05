@@ -14,12 +14,13 @@ const keys = [
   "eaGlYlLqRY0JRcsq0foLZGsu3aVZshxk",
   "TkEDMtKAGzT7ruveBl6rR2JKGIaTjUqK",
   "TothQJZ14f0G1sKaf7oIAixGXQnjenaN",
+  "myFAXbBmLQPh5NSD1TD549oTce5Ck2uC",
 ];
 
 const client = axios.create({
   baseURL: "https://dataservice.accuweather.com",
   params: {
-    apikey: "myFAXbBmLQPh5NSD1TD549oTce5Ck2uC",
+    apikey: "",
   },
 });
 
@@ -64,7 +65,7 @@ export const getLocationByText = (search) => {
     },
   });
 };
-export const getForecastByLocation = async (location) => {
+export const getForecast5dayByLocation = async (location) => {
   const { data } = await client.get(
     `/forecasts/v1/daily/5day/${location.Key}`,
     {
@@ -97,8 +98,6 @@ export const getForecast1DayByLocation = async (location) => {
 };
 
 export const get5dayForeCastByGEO = async (lat, lon) => {
-  const { data } = await getLocationByGEO(lat, lon);
-  const dt = await getForecastByLocation(data);
-
-  return dt;
+  const { data: location } = await getLocationByGEO(lat, lon);
+  return await getForecast5dayByLocation(location);
 };

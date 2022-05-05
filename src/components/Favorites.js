@@ -15,24 +15,19 @@ const Location = (props) => {
         padding: "20px",
       }}
     >
-      <Stack spacing={3}>
-        {data && (
+      {data && (
+        <Stack spacing={3}>
           <Typography variant="h5" textAlign={"center"}>
             {data.location.EnglishName}, {data.location.Country.EnglishName}
           </Typography>
-        )}
-
-        {data && (
           <Typography variant="h6" textAlign={"center"}>
             {data && data.DailyForecasts[0].Temperature.Maximum.Value}° C
           </Typography>
-        )}
-        {data && (
           <Typography textAlign={"center"}>
             {data.DailyForecasts[0].Day.ShortPhrase}
           </Typography>
-        )}
-      </Stack>
+        </Stack>
+      )}
     </Card>
   );
 };

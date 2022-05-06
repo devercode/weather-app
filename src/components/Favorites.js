@@ -1,15 +1,27 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getForecast1DayByLocation } from "../api";
 import { Card, Typography, Stack, Grid } from "@mui/material";
-const Location = (props) => {
+import { actions as homeActions } from "../state/slices/home";
+import TempFormatter from "./TempFormatter";
+import { useNavigate } from "react-router-dom";
+const Location = (location) => {
   const [data, setData] = useState(null);
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+  const onSelect = () => {
+    dispatch(homeActions.setCurrentLocation(location));
+    navigate("/");
+  };
   useEffect(() => {
-    getForecast1DayByLocation(props).then((data) => setData(data));
+    getForecast1DayByLocation(location).then((data) => setData(data));
+    // eslint-disable-next-line
   }, []);
 
   return (
     <Card
+      onClick={onSelect}
       sx={{
         minWidth: "150px",
         padding: "20px",
@@ -21,7 +33,9 @@ const Location = (props) => {
             {data.location.EnglishName}, {data.location.Country.EnglishName}
           </Typography>
           <Typography variant="h6" textAlign={"center"}>
-            {data && data.DailyForecasts[0].Temperature.Maximum.Value}° C
+            <TempFormatter
+              value={data.DailyForecasts[0].Temperature.Maximum.Value}
+            />
           </Typography>
           <Typography textAlign={"center"}>
             {data.DailyForecasts[0].Day.ShortPhrase}

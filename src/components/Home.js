@@ -191,10 +191,20 @@ const Home = () => {
         >
           <Stack direction={"row"} justifyContent={"space-between"}>
             <div>
-              <Typography variant="h2">
+              <Typography
+                variant="h2"
+                sx={{
+                  color: "text.primary",
+                }}
+              >
                 {data.location.EnglishName}, {data.location.Country.EnglishName}
               </Typography>
-              <Typography variant="h4">
+              <Typography
+                variant="h4"
+                sx={{
+                  color: "text.primary",
+                }}
+              >
                 <TempFormatter
                   value={data.DailyForecasts[0].Temperature.Maximum.Value}
                 />
@@ -211,7 +221,15 @@ const Home = () => {
             </div>
           </Stack>
 
-          <Typography variant="h3" textAlign={"center"} mt={10} mb={10}>
+          <Typography
+            variant="h3"
+            textAlign={"center"}
+            mt={10}
+            mb={10}
+            sx={{
+              color: "text.primary",
+            }}
+          >
             {data.DailyForecasts[0].Day.ShortPhrase}
           </Typography>
 

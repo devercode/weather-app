@@ -4,7 +4,6 @@ import { toFahrenheit } from "celsius";
 
 const TempFormatter = ({ value }) => {
   const tempMode = useSelector((state) => state.setting.temperature);
-
   return (
     <>
       {tempMode === TEMPERATURE.Celsius

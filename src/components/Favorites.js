@@ -5,6 +5,7 @@ import { Card, Typography, Stack, Grid } from "@mui/material";
 import { actions as homeActions } from "../state/slices/home";
 import TempFormatter from "./TempFormatter";
 import { useNavigate } from "react-router-dom";
+
 const Location = (location) => {
   const [data, setData] = useState(null);
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ const Location = (location) => {
         padding: "20px",
       }}
     >
+      {/** Show data when  ready */}
       {data && (
         <Stack spacing={3}>
           <Typography variant="h5" textAlign={"center"}>
@@ -46,7 +48,7 @@ const Location = (location) => {
   );
 };
 const Favorites = () => {
-  const favLocations = useSelector((state) => state.favorites.locations);
+  const favLocations = useSelector((state) => state.favorites.locations); // list of favorited locations
 
   return (
     <Grid spacing={10} direction={"row"} flexWrap={"wrap"} container>

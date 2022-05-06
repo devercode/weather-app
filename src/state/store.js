@@ -8,9 +8,11 @@ import { reducer as FavoritesReducer } from "./slices/favorites";
 import { persistReducer } from "redux-persist";
 import { reducer as homeReducer } from "./slices/home";
 import storage from "redux-persist/lib/storage";
+
 const customizedMiddleware = getDefaultMiddleware({
-  serializableCheck: false,
+  serializableCheck: false, // disable warning
 });
+
 const reducer = combineReducers({
   setting: settingReducer,
   favorites: FavoritesReducer,
@@ -20,8 +22,8 @@ const reducer = combineReducers({
 const persistedReducer = persistReducer(
   {
     key: " root",
-    storage,
-    blacklist: ["home"],
+    storage, // persist store to localStorage
+    blacklist: ["home"], //prevent home reducer not to be persisted
   },
   reducer
 );

@@ -18,6 +18,7 @@ import { Link as RouterLink } from "react-router-dom";
 const Header = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
+
   const toggleTheme = () => {
     dispatch(actions.toggleTheme());
   };
@@ -25,7 +26,9 @@ const Header = () => {
   const onTempModeChange = (e) => {
     dispatch(actions.setTempMode(e.target.value));
   };
+
   const tempMode = useSelector((state) => state.setting.temperature);
+
   return (
     <AppBar
       sx={{
@@ -62,6 +65,7 @@ const Header = () => {
                 <Brightness4Icon />
               )}
             </IconButton>
+
             <ToggleButtonGroup
               value={tempMode}
               size="small"

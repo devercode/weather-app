@@ -31,6 +31,7 @@ const SearchBox = ({ onSelect }) => {
   const [loading, setLoading] = useState(false);
 
   const fetch = useDebouncedCallback((v) => {
+    // use Debounce to prevent client does many requests to api
     getLocationByText(v)
       .then(({ data }) => {
         setOpts(
@@ -53,6 +54,7 @@ const SearchBox = ({ onSelect }) => {
     setLoading(true);
     fetch(v.target.value);
   };
+
   return (
     <Box>
       <Autocomplete
@@ -70,10 +72,11 @@ const SearchBox = ({ onSelect }) => {
     </Box>
   );
 };
-
+/**
+ * The component used for detect GEO  and fetch location, when location is fetched it will fire the onReady function
+ */
 const DefaultLocation = ({ onReady }) => {
   const [geo, error] = useCurrentPosition();
-
   useEffect(() => {
     if (geo) {
       getLocationByGEO(geo.coords.latitude, geo.coords.longitude).then(
@@ -85,6 +88,7 @@ const DefaultLocation = ({ onReady }) => {
     // eslint-disable-next-line
   }, [geo]);
   if (!geo && !error) {
+    // show Loading button during waiting user accepts location permission
     return (
       <Box
         sx={{
@@ -98,6 +102,7 @@ const DefaultLocation = ({ onReady }) => {
     );
   }
   if (error) {
+    //show  error when user doesn't accept location permission
     return (
       <Box
         sx={{
@@ -117,6 +122,10 @@ const DefaultLocation = ({ onReady }) => {
   return <></>;
 };
 
+/**
+ * Show daily Forecast
+ * input is forecast data
+ */
 const Forecast = (data) => {
   return (
     <Card
@@ -178,7 +187,9 @@ const Home = () => {
   return (
     <>
       <SearchBox onSelect={onSelect} />
-      {!currentLocation && <DefaultLocation onReady={onLocationReady} />}
+      {/** If no location was set we use GEO location */}
+      {!currentLocation && <DefaultLocation onReady={onLocationReady} />}{" "}
+      {/** Show Location data when it was fetched */}
       {data && (
         <Box
           sx={{
@@ -233,13 +244,7 @@ const Home = () => {
             {data.DailyForecasts[0].Day.ShortPhrase}
           </Typography>
 
-          <Grid
-            direction={"row"}
-            spacing={4}
-            // justifyContent={"space-between"}
-            flexWrap={"wrap"}
-            container
-          >
+          <Grid direction={"row"} spacing={4} flexWrap={"wrap"} container>
             {data.DailyForecasts.map((forecast, i) => (
               <Grid item>
                 <Forecast {...forecast} key={i} />

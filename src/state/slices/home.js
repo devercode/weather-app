@@ -9,6 +9,7 @@ export const HomeSlice = createSlice({
   initialState,
   reducers: {
     setCurrentLocation: (state, action) => {
+      // set current location in Home Page
       state.currentLocation = { ...action.payload };
     },
   },

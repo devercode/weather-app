@@ -171,7 +171,7 @@ const Home = () => {
       dispatch(actions.add(data.location));
     }
     // eslint-disable-next-line
-  }, [isFavorite]);
+  }, [isFavorite, data]);
 
   const onLocationReady = (location) => {
     dispatch(homeActions.setCurrentLocation(location));

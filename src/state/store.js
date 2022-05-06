@@ -3,22 +3,25 @@ import {
   configureStore,
   getDefaultMiddleware,
 } from "@reduxjs/toolkit";
-import { reducer as themeReducer } from "./slices/theme";
+import { reducer as settingReducer } from "./slices/setting";
 import { reducer as FavoritesReducer } from "./slices/favorites";
 import { persistReducer } from "redux-persist";
+import { reducer as homeReducer } from "./slices/home";
 import storage from "redux-persist/lib/storage";
 const customizedMiddleware = getDefaultMiddleware({
   serializableCheck: false,
 });
 const reducer = combineReducers({
-  theme: themeReducer,
+  setting: settingReducer,
   favorites: FavoritesReducer,
+  home: homeReducer,
 });
 
 const persistedReducer = persistReducer(
   {
     key: " root",
     storage,
+    blacklist: ["home"],
   },
   reducer
 );

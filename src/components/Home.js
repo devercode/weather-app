@@ -6,23 +6,26 @@ import {
   Stack,
   Typography,
   Alert,
+  Grid,
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useCurrentPosition } from "react-use-geolocation";
 import {
-  get5dayForeCastByGEO,
   getLocationByText,
   getForecast5dayByLocation,
+  getLocationByGEO,
 } from "../api";
 import { useDebouncedCallback } from "use-debounce";
 import _ from "lodash";
 import ReactMoment from "react-moment";
 import { useDispatch, useSelector } from "react-redux";
 import { actions } from "../state/slices/favorites";
+import { actions as homeActions } from "../state/slices/home";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import IconButton from "@mui/material/IconButton";
+import TempFormatter from "./TempFormatter";
 const SearchBox = ({ onSelect }) => {
   const [opts, setOpts] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -45,6 +48,7 @@ const SearchBox = ({ onSelect }) => {
         setLoading(false);
       });
   }, 500);
+
   const onInputChange = (v) => {
     setLoading(true);
     fetch(v.target.value);
@@ -72,13 +76,14 @@ const DefaultLocation = ({ onReady }) => {
 
   useEffect(() => {
     if (geo) {
-      get5dayForeCastByGEO(geo.coords.latitude, geo.coords.longitude).then(
-        (data) => {
-          onReady(data);
+      getLocationByGEO(geo.coords.latitude, geo.coords.longitude).then(
+        ({ data: location }) => {
+          onReady(location);
         }
       );
     }
-  }, [geo, onReady]);
+    // eslint-disable-next-line
+  }, [geo]);
   if (!geo && !error) {
     return (
       <Box
@@ -125,7 +130,7 @@ const Forecast = (data) => {
           <ReactMoment format="ddd">{data.Date}</ReactMoment>
         </Typography>
         <Typography variant="h6" textAlign={"center"}>
-          {data.Temperature.Maximum.Value}° C
+          <TempFormatter value={data.Temperature.Maximum.Value} />
         </Typography>
       </Stack>
     </Card>
@@ -134,11 +139,12 @@ const Forecast = (data) => {
 
 const Home = () => {
   const [data, setData] = useState(null);
+  const currentLocation = useSelector((state) => state.home.currentLocation);
+
   const dispatch = useDispatch();
+
   const onSelect = (location) => {
-    getForecast5dayByLocation(location).then((res) => {
-      setData(res);
-    });
+    dispatch(homeActions.setCurrentLocation(location));
   };
   const favorites = useSelector((state) => state.favorites.locations);
 
@@ -158,17 +164,21 @@ const Home = () => {
     // eslint-disable-next-line
   }, [isFavorite]);
 
-  const onLocationReady = (data) => {
-    setData(data);
+  const onLocationReady = (location) => {
+    dispatch(homeActions.setCurrentLocation(location));
   };
   useEffect(() => {
-    window.NProgress.start();
-  }, []);
+    if (currentLocation) {
+      getForecast5dayByLocation(currentLocation).then((res) => {
+        setData(res);
+      });
+    }
+  }, [currentLocation]);
 
   return (
     <>
       <SearchBox onSelect={onSelect} />
-      <DefaultLocation onReady={onLocationReady} />
+      {!currentLocation && <DefaultLocation onReady={onLocationReady} />}
       {data && (
         <Box
           sx={{
@@ -185,7 +195,9 @@ const Home = () => {
                 {data.location.EnglishName}, {data.location.Country.EnglishName}
               </Typography>
               <Typography variant="h4">
-                {data.DailyForecasts[0].Temperature.Maximum.Value}° C
+                <TempFormatter
+                  value={data.DailyForecasts[0].Temperature.Maximum.Value}
+                />
               </Typography>
             </div>
             <div>
@@ -203,16 +215,19 @@ const Home = () => {
             {data.DailyForecasts[0].Day.ShortPhrase}
           </Typography>
 
-          <Stack
+          <Grid
             direction={"row"}
             spacing={4}
-            justifyContent={"space-between"}
+            // justifyContent={"space-between"}
             flexWrap={"wrap"}
+            container
           >
             {data.DailyForecasts.map((forecast, i) => (
-              <Forecast {...forecast} key={i} />
+              <Grid item>
+                <Forecast {...forecast} key={i} />
+              </Grid>
             ))}
-          </Stack>
+          </Grid>
         </Box>
       )}
     </>

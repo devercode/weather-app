@@ -12,7 +12,7 @@ const Main = styled(Box)`
 `;
 
 function App() {
-  const themeMode = useSelector((state) => state.theme.mode);
+  const themeMode = useSelector((state) => state.setting.mode);
   const theme = useMemo(
     () =>
       createTheme({

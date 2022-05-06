@@ -3,6 +3,7 @@ import _ from "lodash";
 import { toast } from "react-toastify";
 
 const keys = [
+  // list of api keys
   "sqAsoOUJlZgRBCkyfEBrl23jnntaOfuw",
   "dtsHeugV48INzXPkjfG1ENV74Bb4NGMx",
   "gvwLIfThiOTtzFNzl2WwPRkKuXA5tTQi",
@@ -27,7 +28,7 @@ const client = axios.create({
 client.interceptors.request.use((request) => {
   request.params = {
     ...request.params,
-    apikey: _.shuffle(keys)[0],
+    apikey: _.shuffle(keys)[0], // change the API key before send request
   };
   window.NProgress.start();
   return request;
@@ -41,9 +42,10 @@ client.interceptors.response.use(
   function (err) {
     window.NProgress.done();
     if (err.code === "ERR_NETWORK") {
+      // detect the API Limit and show toast message
       toast.error("Reached API Limit");
     } else {
-      toast.error(err.response.data);
+      toast.error(err.response.data); // show api error message
     }
     return Promise.reject(err);
   }
